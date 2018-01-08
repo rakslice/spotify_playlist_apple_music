@@ -456,7 +456,7 @@ def tree_uia(obj, indent="", output_list=None):
 def get_spotify_playlist(url):
     contents = fetch_cached(url)
     prev_url = url
-    authorization = read_contents(os.path.join(script_path, "spotify_authorization.txt"))
+    authorization = None
 
     soup = make_soup(contents)
 
@@ -511,6 +511,8 @@ def get_spotify_playlist(url):
             contents = read_contents(cache_filename)
             tracks_obj = json.loads(contents)
         else:
+            if authorization is None:
+                authorization = read_contents(os.path.join(script_path, "spotify_authorization.txt"))
             response = requests.get(next_url, headers={"Authorization": authorization,
                                                        "Accept": "application/json",
                                                        "Origin": "https://open.spotify.com",
