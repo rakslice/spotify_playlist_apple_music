@@ -19,8 +19,6 @@ from unidecode import unidecode
 
 script_path = os.path.dirname(os.path.abspath(__file__))
 
-PLAYLIST_NAME = "my iTunes playlist"
-
 SKIP_ARTISTS = frozenset([])
 
 SKIP_SONGS = frozenset([])
@@ -135,7 +133,11 @@ def word_replacement(s):
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("url")
+    parser.add_argument("url",
+                        help="An open.spotify.com URL for the public playlist to import")
+    parser.add_argument("--playlist-name",
+                        required=True,
+                        help="The name of the iTunes playlist, used to match the context menu item")
     return parser.parse_args()
 
 
@@ -346,7 +348,7 @@ def main():
                 if verify_context_menu:
                     time_to_context = Timer("context show")
 
-                    expected_menu_item_name = "Add to Last Playlist, " + PLAYLIST_NAME
+                    expected_menu_item_name = "Add to Last Playlist, " + options.playlist_name
 
                     time.sleep(1)
 
