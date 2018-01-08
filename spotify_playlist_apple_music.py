@@ -477,7 +477,7 @@ def get_spotify_playlist(url):
             expected_offset += 1
 
         next_url = tracks_obj.get("next")
-        print "next: %s" % next_url
+        dout("next: %s" % next_url)
 
         if next_url is None:
             break
@@ -493,9 +493,9 @@ def get_spotify_playlist(url):
                                                        "Origin": "https://open.spotify.com",
                                                        "Referer": prev_url})
             contents = response.text
-            print "contents: " + repr(contents)
+            # print "contents: " + repr(contents)
             tracks_obj = json.loads(contents)
-            print tracks_obj
+            # print tracks_obj
             assert tracks_obj["offset"] == expected_offset, "Got %d expected %d" % (tracks_obj["offset"], expected_offset)
             write_contents(cache_filename, contents.encode("utf-8"))
 
