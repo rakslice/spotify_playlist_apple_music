@@ -319,9 +319,15 @@ def main():
                     continue
                 found_artist_candidate = unilower(found_song_artist)
                 original_artist_candidate = unilower(original_track_artist)
-                if found_artist_candidate != original_artist_candidate:
-                    dout("Original song artist %r (%r) doesn't match %r (%r" % (original_track_artist, original_artist_candidate, found_song_artist, found_artist_candidate))
+                if trim_punct(original_artist_candidate) in found_artist_candidate:
+                    artist_match_on = trim_punct(original_artist_candidate)
+                elif trim_punct(found_artist_candidate) in original_artist_candidate:
+                    artist_match_on = trim_punct(found_artist_candidate)
+                else:
+                    dout("Original song artist %r (%r) doesn't match %r (%r)" % (original_track_artist, original_artist_candidate, found_song_artist, found_artist_candidate))
                     continue
+
+                dout("Matched on %r - %r" % (artist_match_on, original_candidate))
 
                 buttons = songs_group_children[i + 4].children()
                 dots_button = buttons[-1]
