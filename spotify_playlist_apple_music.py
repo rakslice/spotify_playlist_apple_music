@@ -157,16 +157,20 @@ def main():
 
     dlogfile(os.path.join(script_path, "output.log"))
 
+    dout("iTunes automation. Turn on SCROLL LOCK to stop before the next track.")
+    assert not scroll_lock_on()
+
     skip_to_filename = os.path.join(script_path, "skip_to.txt")
     skip_to = read_contents(skip_to_filename).decode('utf-8').strip()
 
     no_results_filename = os.path.join(script_path, "no_results.log")
 
+    # pywinauto.application.Application(backend="uia").start(r"c:\Program Files\iTunes\iTunes.exe")
     app = pywinauto.application.Application(backend="uia").connect(path="itunes.exe")
 
     win = app.window(title="iTunes")
 
-    # desktop = pywinauto.Desktop(backend='uia')
+    desktop = pywinauto.Desktop(backend='uia')
 
     window = win.wrapper_object()
     assert isinstance(window, pywinauto.controls.uiawrapper.UIAWrapper)
@@ -274,7 +278,7 @@ def main():
 
             dout((songs_label, songs_label_idx))
 
-            dout(uia_fetch(window, songs_label_idx))
+            # dout(uia_fetch(window, songs_label_idx))
 
             songs_group_idx = uia_sibling(songs_label_idx, 1)
             songs_group = uia_fetch(window, songs_group_idx)
@@ -339,8 +343,14 @@ def main():
 
                     expected_menu_item_name = "Add to Last Playlist, " + PLAYLIST_NAME
 
+                    time.sleep(1)
+
                     # context = desktop.Context.wrapper_object()
-                    context = app.Context.wrapper_object()
+                    try:
+                        context = app.Context.wrapper_object()
+                    except pywinauto.findbestmatch.MatchError:
+                        print app.windows()
+                        raise
 
                     dout(time_to_context.show())
 
@@ -353,7 +363,7 @@ def main():
                     time_to_context.show()
                     assert preset_playlist is not None
                     assert isinstance(preset_playlist, pywinauto.controls.uia_controls.MenuItemWrapper)
-                    assert preset_playlist.texts()[0] == expected_menu_item_name
+                    assert preset_playlist.texts()[0] == expected_menu_item_name, "Couldn't find menu item %r" % expected_menu_item_name
 
                     if preset_playlist is None:
                         playlists, _ = uia_find_first_child(context, "Add to Playlist")
