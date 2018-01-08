@@ -1,0 +1,11 @@
+*.log
+spotify_authorization.txt
+junkfile*
+*.pyc
+skip_to.txt
+no_results.txt
+.idea/dictionaries/*
+.idea/workspace.xml
+.idea/
+removed/
+spotify_playlist_apple_music.iml
