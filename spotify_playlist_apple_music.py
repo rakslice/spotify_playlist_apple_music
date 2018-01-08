@@ -161,7 +161,10 @@ def main():
     assert not scroll_lock_on()
 
     skip_to_filename = os.path.join(script_path, "skip_to.txt")
-    skip_to = read_contents(skip_to_filename).decode('utf-8').strip()
+    if os.path.exists(skip_to_filename):
+        skip_to = read_contents(skip_to_filename).decode('utf-8').strip()
+    else:
+        skip_to = None
 
     no_results_filename = os.path.join(script_path, "no_results.log")
 
@@ -181,6 +184,8 @@ def main():
         tracks = get_spotify_playlist(url)
 
         started = False
+        if skip_to is None:
+            started = True
 
         # dialog = win.child_window(title="iTunes", control_type="Window")
 
