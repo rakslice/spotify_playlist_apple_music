@@ -20,7 +20,9 @@ on the included requirements.txt file.
 
 2. Launch iTunes
 
-3. You'll need to get iTunes in the correct starting state by searching for a track in the Apple Music search and adding it to your target playlist. You can remove it again right away; this is just to get the "Add to Last Playlist, ~" context menu item to appear and to get the search in Apple Music mode. 
+3. You'll need to get iTunes in the correct starting state by searching for a track in the Apple Music search and adding it to your target playlist. You can remove it again right away; this is just to get the "Add to Last Playlist, ~" context menu item to appear and to get the search in Apple Music mode.
+
+4. If you've used the script previously on a different playlist, remove the `junkfile*` cache files that have the old track listing pages.  
 
 4. Run it:
 
