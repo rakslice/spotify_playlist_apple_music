@@ -1,6 +1,8 @@
 *.log
 spotify_authorization.txt
+user_agent.txt
 junkfile*
+cache_*
 *.pyc
 skip_to.txt
 no_results.txt

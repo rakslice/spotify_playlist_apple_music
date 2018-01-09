@@ -4,7 +4,8 @@ import ctypes
 import json
 import os
 import string
-import urllib
+import urllib2
+import urlparse
 # noinspection PyPackageRequirements
 import bs4
 import time
@@ -26,13 +27,13 @@ SKIP_SONGS = frozenset([])
 LEAVE_OUT_PHRASES = ["Remastered 2011", "Remastered"]
 
 
-def fetch_cached(url):
+def fetch_cached(url, cache_filename="junkfile", ua=None):
     """ GET the given URL, using junkfile as a cache """
-    cache_filename = os.path.join(script_path, "junkfile")
+    cache_filename = os.path.join(script_path, cache_filename)
     if os.path.exists(cache_filename):
         return read_contents(cache_filename)
 
-    contents = fetch(url)
+    contents = fetch(url, ua=ua)
     write_contents(cache_filename, contents)
     return contents
 
@@ -43,9 +44,13 @@ def write_contents(filename, contents):
         handle.write(contents)
 
 
-def fetch(url):
+def fetch(url, ua=None):
     """ GET the given URL """
-    handle = urllib.urlopen(url)
+    if ua is None:
+        req = urllib2.Request(url)
+    else:
+        req = urllib2.Request(url, headers={"User-Agent": ua})
+    handle = urllib2.urlopen(req)
     try:
         contents = handle.read()
     finally:
@@ -198,7 +203,11 @@ def main():
     if True:
 
         url = options.url
-        tracks = get_spotify_playlist(url)
+
+        parsed_url = urlparse.urlparse(url)
+
+        track_source = TRACK_SOURCES[parsed_url.hostname]
+        tracks = track_source(url)
 
         started = False
         if skip_to is None:
@@ -563,6 +572,43 @@ def get_spotify_playlist(url):
             write_contents(cache_filename, contents.encode("utf-8"))
 
         prev_url = next_url
+
+
+def get_browsery_ua():
+    return read_contents(os.path.join(script_path, "user_agent.txt"))
+
+
+def get_allmusic_playlist(url):
+    cache_filename = "cache_allmusic_%s" % hash(url)
+
+    contents = fetch_cached(url, cache_filename, ua=get_browsery_ua())
+
+    soup = make_soup(contents)
+
+    print contents
+    album_title = soup.find("h1", {"class": "album-title"}).get_text().strip()
+
+    table = soup.find("table")
+
+    for tr in table.find_all("tr", {"class": "track"}):
+
+        title_obj = tr.find("div", {"class": "title"})
+        title = title_obj.get_text()
+        title = title.strip()
+        performer = tr.find("td", {"class": "performer"})
+        artists = []
+
+        for artist in performer.find_all("span", {"itemprop": "name"}):
+            artists.append(artist.get_text().strip())
+
+        out = {"name": title, "artist": artists[0], "album": album_title}
+        yield out
+
+
+TRACK_SOURCES = {
+    "open.spotify.com": get_spotify_playlist,
+    "www.allmusic.com": get_allmusic_playlist,
+}
 
 
 if __name__ == "__main__":
