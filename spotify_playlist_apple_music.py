@@ -27,6 +27,7 @@ LEAVE_OUT_PHRASES = ["Remastered 2011", "Remastered"]
 
 
 def fetch_cached(url):
+    """ GET the given URL, using junkfile as a cache """
     cache_filename = os.path.join(script_path, "junkfile")
     if os.path.exists(cache_filename):
         return read_contents(cache_filename)
@@ -37,11 +38,13 @@ def fetch_cached(url):
 
 
 def write_contents(filename, contents):
+    """ Write the given contents to the given file, overwriting if it already exists """
     with open(filename, "wb") as handle:
         handle.write(contents)
 
 
 def fetch(url):
+    """ GET the given URL """
     handle = urllib.urlopen(url)
     try:
         contents = handle.read()
@@ -51,14 +54,18 @@ def fetch(url):
 
 
 def read_contents(filename):
+    """ Read the contents of the given file """
     with open(filename, "rb") as handle:
         return handle.read()
 
 
 def make_soup(contents):
+    """ Parse the given HTML web page contents using BeautifulSoup """
     return bs4.BeautifulSoup(contents, "html.parser")
 
 
+# Keycodes to pass to type_keys for characters in the search
+# (characters not specified here will be used directly)
 TEXT_REPLACEMENTS = {" ": "{VK_SPACE}",
                      "+": "+=",
                      "(": "+9",
@@ -67,6 +74,7 @@ TEXT_REPLACEMENTS = {" ": "{VK_SPACE}",
 
 
 def type_edit_text(control, text):
+    """ Enter the text into the given iTunes text box control """
     control.click_input()
     output_parts = []
 
@@ -82,6 +90,7 @@ def type_edit_text(control, text):
 
 
 def firstpos(s, needle):
+    """ Get the position of the first appearance of the substring needle in the string s, or None if it is not found."""
     r = s.find(needle)
     if r == -1:
         return None
@@ -89,6 +98,7 @@ def firstpos(s, needle):
 
 
 def trim_punct(s):
+    """ Return the part of s from the beginning up to but not including the first punctuation mark """
     positions = [firstpos(s, ch) for ch in string.punctuation]
     if any(x is not None for x in positions):
         first = min(x for x in positions if x is not None)
@@ -97,6 +107,7 @@ def trim_punct(s):
 
 
 def ichildren(obj, **kwargs):
+    """ An iterator version of BaseWrapper.children() """
     assert isinstance(obj, pywinauto.base_wrapper.BaseWrapper)
 
     child_elements = obj.element_info.children(**kwargs)
@@ -107,6 +118,7 @@ def ichildren(obj, **kwargs):
 
 
 def get_child_at(obj, i, **kwargs):
+    """ Equivalent to doing BaseWrapper.children() and then getting a single item out of the resulting list """
     assert isinstance(obj, pywinauto.base_wrapper.BaseWrapper)
     child_elements = obj.element_info.children(**kwargs)
     element_info = child_elements[i]
@@ -115,6 +127,7 @@ def get_child_at(obj, i, **kwargs):
     return child
 
 
+# Word replacements to do in the search (to match what Apple Music does in their catalog)
 WORD_REPLACEMENTS = {
     "fuck": "f**k",
     "shit": "s**t"
@@ -145,12 +158,14 @@ VK_SCROLL = 0x91
 
 
 def scroll_lock_on():
+    """ Check if the keyboard Scroll Lock is turned on"""
     hll_dll = ctypes.WinDLL("User32.dll")
     out = hll_dll.GetKeyState(VK_SCROLL)
     return out
 
 
 def unilower(s):
+    """ Lower-case a string and convert accented characters to unaccented equivalents for matching """
     return unidecode(s.lower())
 
 
@@ -414,7 +429,15 @@ def uia_fetch(obj, l):
 
 
 def uia_find_first_child(obj, title, class_name=None):
-    """:rtype: (pywinauto.controls.uiawrapper.UIAWrapper, int or None)"""
+    """
+    Search the direct children of a UIA control for a control with the
+    given title (and optionally class name) and return
+    the matching control and its index or None, None if no match was found
+    :type obj: pywinauto.controls.uiawrapper.UIAWrapper
+    :type title: unicode or str
+    :type class_name: None or unicode or str
+    :rtype: (pywinauto.controls.uiawrapper.UIAWrapper, int or None)
+    """
     assert isinstance(obj, pywinauto.controls.uiawrapper.UIAWrapper)
     for i, child in enumerate(ichildren(obj)):
         assert isinstance(child, pywinauto.controls.uiawrapper.UIAWrapper)
@@ -426,7 +449,16 @@ def uia_find_first_child(obj, title, class_name=None):
 
 
 def uia_find_first_descendent_depth_first(obj, title, class_name=None):
-    """:rtype: (pywinauto.controls.uiawrapper.UIAWrapper or None, list of int or None)"""
+    """
+    Search the descendents of a UIA control, in depth-first order,
+    for a control with the given title (and optionally class name) and return
+    the matching control and the list of indexes to get to it or None, None
+    if no match was found
+    :type obj: pywinauto.controls.uiawrapper.UIAWrapper
+    :type title: unicode or str
+    :type class_name: None or unicode or str
+    :rtype: (pywinauto.controls.uiawrapper.UIAWrapper or None, list of int or None)
+    """
     assert isinstance(obj, pywinauto.controls.uiawrapper.UIAWrapper)
     for i, child in enumerate(ichildren(obj)):
         assert isinstance(child, pywinauto.controls.uiawrapper.UIAWrapper)
@@ -442,6 +474,7 @@ def uia_find_first_descendent_depth_first(obj, title, class_name=None):
 
 
 def tree_uia(obj, indent="", output_list=None):
+    """ Dump the structure of the subtree of a UIA control to a string suitable for debug output """
     top = output_list is None
     if output_list is None:
         output_list = []
@@ -454,6 +487,11 @@ def tree_uia(obj, indent="", output_list=None):
 
 
 def get_spotify_playlist(url):
+    """
+    Iterate through the tracks in the public Spotify playlist at the given
+    open.spotify.com URL, caching downloaded sections to junkfile* files.
+    :rtype: collections.Iterable[dict[str, unicode]]
+    """
     contents = fetch_cached(url)
     prev_url = url
     authorization = None
