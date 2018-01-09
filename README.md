@@ -35,5 +35,5 @@ on the included requirements.txt file.
 - You may need to tweak the track/artist name matching code to get it to work for the tracks in your playlist.
 - `LEAVE_OUT_PHRASES` has text fragments to not include in the Apple Music search
 - `WORD_REPLACEMENTS` has word re-mappings to use in the search
-- `TEXT_REPLACEMENTS` maps characters of the search to [pywinauto keyboard codes](https://pywinauto.readthedocs.io/en/latest/code/pywinauto.keyboard.html) (these appear to be based on [Windows virtual-key codes](https://msdn.microsoft.com/en-us/library/windows/desktop/dd375731(v=vs.85).aspx)) - you may need to alter this if you use a non-US keyboard or need additional symbols for your searches 
+- `CHARACTER_CODES` maps characters of the search to [pywinauto keyboard codes](https://pywinauto.readthedocs.io/en/latest/code/pywinauto.keyboard.html) (these appear to be based on [Windows virtual-key codes](https://msdn.microsoft.com/en-us/library/windows/desktop/dd375731(v=vs.85).aspx)) - you may need to alter this if you use a non-US keyboard or need additional symbols for your searches 
 - As with all GUI automation of this nature, you may find it unreliable and need to adjust the timing rubber bands to get it to work on your system.

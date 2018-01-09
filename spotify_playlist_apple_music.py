@@ -66,11 +66,11 @@ def make_soup(contents):
 
 # Keycodes to pass to type_keys for characters in the search
 # (characters not specified here will be used directly)
-TEXT_REPLACEMENTS = {" ": "{VK_SPACE}",
-                     "+": "+=",
-                     "(": "+9",
-                     ")": "+0",
-                     }
+CHARACTER_CODES = {" ": "{VK_SPACE}",
+                   "+": "+=",
+                   "(": "+9",
+                   ")": "+0",
+                   }
 
 
 def type_edit_text(control, text):
@@ -79,8 +79,8 @@ def type_edit_text(control, text):
     output_parts = []
 
     for ch in text:
-        if ch in TEXT_REPLACEMENTS:
-            output_parts.append(TEXT_REPLACEMENTS[ch])
+        if ch in CHARACTER_CODES:
+            output_parts.append(CHARACTER_CODES[ch])
         else:
             output_parts.append(ch)
 
