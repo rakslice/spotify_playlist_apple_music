@@ -26,6 +26,9 @@ SKIP_SONGS = frozenset([])
 
 LEAVE_OUT_PHRASES = ["Remastered 2011", "Remastered", "- Acoustic", "Remaster"]
 
+# This is to be set by the playlist loader to something appropriate for a playlist name
+loaded_playlist_name = None
+
 
 def fetch_cached(url, cache_filename="junkfile", ua=None):
     """ GET the given URL, using junkfile as a cache """
@@ -160,8 +163,7 @@ def parse_args():
     parser.add_argument("url",
                         help="An open.spotify.com URL for the public playlist to import")
     parser.add_argument("--playlist-name",
-                        required=True,
-                        help="The name of the iTunes playlist, used to match the context menu item")
+                        help="The name of the iTunes playlist to create or add to. (default: use the name from the spotify playlist)")
     parser.add_argument("--create",
                         help="Create the playlist instead of expecting it to exist",
                         default=False,
@@ -243,6 +245,11 @@ def main():
         for input_track_num, track in enumerate(tracks):
             if scroll_lock_on():
                 assert False, "stopping - scroll lock on"
+
+            playlist_name = options.playlist_name
+            if playlist_name is None:
+                playlist_name = loaded_playlist_name
+            assert playlist_name is not None
 
             original_track_name = track["name"]
             original_track_artist = track["artist"]
@@ -411,8 +418,6 @@ def main():
 
                     time_to_context.show()
 
-                    playlist_name = options.playlist_name
-
                     if do_create:
                         # Create a new playlist with this track from the context menu
                         playlists, _ = uia_find_first_child(context, "Add to Playlist")
@@ -556,6 +561,9 @@ def get_spotify_playlist(url):
     open.spotify.com URL, caching downloaded sections to junkfile* files.
     :rtype: collections.Iterable[dict[str, unicode]]
     """
+
+    global loaded_playlist_name
+
     cache_filename = "cache_spotify_%s" % hash(url)
 
     contents = fetch_cached(url, cache_filename=cache_filename)
@@ -587,6 +595,8 @@ def get_spotify_playlist(url):
     tracks_obj = entity["tracks"]
 
     # print tracks_obj
+
+    loaded_playlist_name = entity["name"]
 
     expected_offset = 0
     while True:
