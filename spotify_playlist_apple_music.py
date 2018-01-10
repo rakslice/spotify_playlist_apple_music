@@ -505,7 +505,9 @@ def get_spotify_playlist(url):
     open.spotify.com URL, caching downloaded sections to junkfile* files.
     :rtype: collections.Iterable[dict[str, unicode]]
     """
-    contents = fetch_cached(url)
+    cache_filename = "cache_spotify_%s" % hash(url)
+
+    contents = fetch_cached(url, cache_filename=cache_filename)
     prev_url = url
     authorization = None
 
