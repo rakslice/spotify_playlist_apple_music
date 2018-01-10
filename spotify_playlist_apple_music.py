@@ -302,7 +302,7 @@ def main():
 
             if not found:
                 with open(no_results_filename, "a") as handle:
-                    print >> handle, (u"%s - %s - %s - %s" % (input_track_num, original_track_name, original_track_artist, actual_label_text)).encode('utf-8')
+                    print >> handle, (u"%s - %s - %s - %s" % ((input_track_num + 1), original_track_name, original_track_artist, actual_label_text)).encode('utf-8')
                 continue
 
             songs_label, songs_label_idx = uia_find_first_descendent_depth_first(window, "SONGS", "Custom")
