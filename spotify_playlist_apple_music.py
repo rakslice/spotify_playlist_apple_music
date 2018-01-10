@@ -24,7 +24,7 @@ SKIP_ARTISTS = frozenset([])
 
 SKIP_SONGS = frozenset([])
 
-LEAVE_OUT_PHRASES = ["Remastered 2011", "Remastered"]
+LEAVE_OUT_PHRASES = ["Remastered 2011", "Remastered", "- Acoustic", "Remaster"]
 
 
 def fetch_cached(url, cache_filename="junkfile", ua=None):
