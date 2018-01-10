@@ -182,9 +182,15 @@ def main():
     dout("iTunes automation. Turn on SCROLL LOCK to stop before the next track.")
     assert not scroll_lock_on()
 
-    skip_to_filename = os.path.join(script_path, "skip_to.txt")
-    if os.path.exists(skip_to_filename):
-        skip_to = read_contents(skip_to_filename).decode('utf-8').strip()
+    url = options.url
+
+    skip_to_filename_static = os.path.join(script_path, "skip_to.txt")
+    skip_to_filename_hash = os.path.join(script_path, "skip_to_%s.txt" % hash(url))
+
+    for skip_to_filename in [skip_to_filename_hash, skip_to_filename_static]:
+        if os.path.exists(skip_to_filename):
+            skip_to = read_contents(skip_to_filename).decode('utf-8').strip()
+            break
     else:
         skip_to = None
 
@@ -201,8 +207,6 @@ def main():
     assert isinstance(window, pywinauto.controls.uiawrapper.UIAWrapper)
     window.set_focus()
     if True:
-
-        url = options.url
 
         parsed_url = urlparse.urlparse(url)
 
@@ -237,7 +241,7 @@ def main():
                     dout((input_track_num, what_to_search_for))
                     continue
             else:
-                write_contents(skip_to_filename, what_to_search_for.encode("utf-8"))
+                write_contents(skip_to_filename_hash, what_to_search_for.encode("utf-8"))
 
             if original_track_artist in SKIP_ARTISTS:
                 continue
