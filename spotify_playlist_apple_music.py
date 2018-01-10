@@ -78,9 +78,7 @@ CHARACTER_CODES = {" ": "{VK_SPACE}",
                    }
 
 
-def type_edit_text(control, text):
-    """ Enter the text into the given iTunes text box control """
-    control.click_input()
+def text_to_sendkeys_str(text):
     output_parts = []
 
     for ch in text:
@@ -90,6 +88,14 @@ def type_edit_text(control, text):
             output_parts.append(ch)
 
     text = "".join(output_parts)
+    return text
+
+
+def type_edit_text(control, text):
+    """ Enter the text into the given iTunes text box control """
+    control.click_input()
+
+    text = text_to_sendkeys_str(text)
     type_string = "^A" + text
     control.type_keys(type_string)
 
@@ -156,6 +162,11 @@ def parse_args():
     parser.add_argument("--playlist-name",
                         required=True,
                         help="The name of the iTunes playlist, used to match the context menu item")
+    parser.add_argument("--create",
+                        help="Create the playlist instead of expecting it to exist",
+                        default=False,
+                        action="store_true"
+                        )
     return parser.parse_args()
 
 
@@ -193,6 +204,8 @@ def main():
             break
     else:
         skip_to = None
+
+    do_create = options.create and skip_to is None
 
     no_results_filename = os.path.join(script_path, "no_results.log")
 
@@ -383,8 +396,6 @@ def main():
                 if verify_context_menu:
                     time_to_context = Timer("context show")
 
-                    expected_menu_item_name = "Add to Last Playlist, " + options.playlist_name
-
                     time.sleep(1)
 
                     # context = desktop.Context.wrapper_object()
@@ -400,26 +411,59 @@ def main():
 
                     time_to_context.show()
 
-                    preset_playlist = get_child_at(context, 1)
+                    playlist_name = options.playlist_name
 
-                    time_to_context.show()
-                    assert preset_playlist is not None
-                    assert isinstance(preset_playlist, pywinauto.controls.uia_controls.MenuItemWrapper)
-                    assert preset_playlist.texts()[0] == expected_menu_item_name, "Couldn't find menu item %r" % expected_menu_item_name
-
-                    if preset_playlist is None:
+                    if do_create:
+                        # Create a new playlist with this track from the context menu
                         playlists, _ = uia_find_first_child(context, "Add to Playlist")
                         assert playlists is not None
                         assert isinstance(playlists, pywinauto.controls.uia_controls.MenuItemWrapper)
 
                         playlists.expand()
-                        while context:
-                            time.sleep(2)
+                        time.sleep(0.25)
+                        # select the first option from the submenu, which is new playlist option
+                        context.type_keys("{VK_DOWN}{VK_RETURN}")
+
+                        time.sleep(1)
+
+                        dout(tree_uia(window))
+
+                        # Playlist created from a track gets a default name "<artist> - <track>"
+                        actual_text = None
+                        for _ in xrange(10):
+                            should_be_group_box = get_child_at(window, 0)
+                            actual_text = should_be_group_box.texts()[0]
+                            if actual_text.startswith(found_song_artist + " - ") and actual_text.endswith(" header"):
+                                break
+                            time.sleep(0.5)
+                        else:
+                            assert False, (actual_text, found_song_artist)
+
+                        # We start with the playlist name in rename mode with the existing text selected
+                        window.type_keys(text_to_sendkeys_str(playlist_name) + "{VK_RETURN}")
+
+                        do_create = False
+
+                        assert verify_context_menu
+                        # We left this set because it will confirm that the playlist was created with the right name
+                        # when we read the name back off the context menu when adding the next track
+
                     else:
+
+                        expected_menu_item_name = "Add to Last Playlist, " + playlist_name
+
+                        preset_playlist = get_child_at(context, 1)
+
+                        time_to_context.show()
+
+                        assert preset_playlist is not None
+                        assert isinstance(preset_playlist, pywinauto.controls.uia_controls.MenuItemWrapper)
+                        assert preset_playlist.texts()[0] == expected_menu_item_name, "Couldn't find menu item %r" % expected_menu_item_name
+
                         preset_playlist.select()
 
-                    # okay, the context menu worked; from this point on use a keyboard shortcut
-                    verify_context_menu = False
+                        # okay, the context menu worked; from this point on use a keyboard shortcut
+                        verify_context_menu = False
                 else:
                     time.sleep(0.5)
                     window.type_keys("l")
