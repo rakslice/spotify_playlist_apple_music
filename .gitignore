@@ -5,6 +5,7 @@ junkfile*
 cache_*
 *.pyc
 skip_to.txt
+skip_to_*.txt
 no_results.txt
 .idea/dictionaries/*
 .idea/workspace.xml
