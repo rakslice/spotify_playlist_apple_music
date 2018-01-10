@@ -208,6 +208,8 @@ def main():
         skip_to = None
 
     do_create = options.create and skip_to is None
+    if options.create and skip_to is not None:
+        dout("Note: --create specified but not creating a playlist because skip_to track is present which indicates playlist should already exist")
 
     no_results_filename = os.path.join(script_path, "no_results.log")
 
