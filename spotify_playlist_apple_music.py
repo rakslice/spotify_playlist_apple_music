@@ -315,8 +315,15 @@ def main():
 
             # dout(uia_fetch(window, songs_label_idx))
 
-            songs_group_idx = uia_sibling(songs_label_idx, 1)
-            songs_group = uia_fetch(window, songs_group_idx)
+            for _ in xrange(4):
+                songs_group_idx = uia_sibling(songs_label_idx, 1)
+                try:
+                    songs_group = uia_fetch(window, songs_group_idx)
+                except IndexError:
+                    time.sleep(0.5)
+                break
+            else:
+                assert False, "error finding songs list"
 
             if uia_fetch(songs_group, [0]).texts()[0] == "See All":
                 songs_group_idx = uia_sibling(songs_label_idx, 2)
