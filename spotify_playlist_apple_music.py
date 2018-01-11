@@ -164,10 +164,11 @@ def parse_args():
                         help="An open.spotify.com URL for the public playlist to import")
     parser.add_argument("--playlist-name",
                         help="The name of the iTunes playlist to create or add to. (default: use the name from the spotify playlist)")
-    parser.add_argument("--create",
-                        help="Create the playlist instead of expecting it to exist",
-                        default=False,
-                        action="store_true"
+    parser.add_argument("--exists",
+                        help="Expect an existing last playlist instead of creating it at the start",
+                        default=True,
+                        action="store_false",
+                        dest="create"
                         )
     return parser.parse_args()
 
