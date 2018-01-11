@@ -16,37 +16,37 @@ on the included requirements.txt file.
 
 # Command-line options
 
-    usage: spotify_playlist_apple_music.py [-h] [--playlist-name PLAYLIST_NAME]
-       [--exists]
-       url
-    
-    positional arguments:
-      url   An open.spotify.com URL for the public playlist to
-    import
-    
-    optional arguments:
-      -h, --helpshow this help message and exit
-      --playlist-name PLAYLIST_NAME
-    The name of the iTunes playlist to create or add to.
-    (default: use the name from the spotify playlist)
-      --exists  Expect an existing last playlist instead of creating
-    it at the start
+	usage: spotify_playlist_apple_music.py [-h] [--playlist-name PLAYLIST_NAME]
+	                                       [--exists]
+	                                       url
+	
+	positional arguments:
+	  url                   An open.spotify.com URL for the public playlist to
+	                        import
+	
+	optional arguments:
+	  -h, --help            show this help message and exit
+	  --playlist-name PLAYLIST_NAME
+	                        The name of the iTunes playlist to create or add to.
+	                        (default: use the name from the spotify playlist)
+	  --exists              Expect an existing last playlist instead of creating a
+	                        playlist at the start
 
 # To use
 
-1. If you have a playlist with more than the first page of tracks (100+ tracks), the script will need to do JSON requests to Spotify for more pages of playlist. There is no Spotify authentication built-in; you'll need to get a Spotify Authorization header ("Bearer ...") and put it in `spotify_authorization.txt`
+1. If you have a playlist with more than the first page of tracks (100+ tracks), the script will need to do JSON requests to Spotify for more pages of playlist. There is no Spotify authentication built-in; you'll need to get a Spotify Authorization header ("`Bearer `...") and put it in `spotify_authorization.txt`
 
 2. Launch iTunes
 
 3. Run it:
-
-    >c:\Python27\python spotify_playlist_apple_music.py <open.spotify.com playlist web page URL>
+    
+    	>c:\Python27\python spotify_playlist_apple_music.py <open.spotify.com playlist web page URL>
 
 4. If you need to exit, turn on Scroll Lock and the script will stop before the next track.
 
 # Notes
 
-- iTunes' search box needs to be in Apple Music mode. If you run into problems just type something into the search box and click the "All Apple Music" button on the right of the pop-up (if you don't see it, make sure iTunes is logged in to your Apple account with an active Apple Music subscription).
+- iTunes' search box needs to be in Apple Music mode. If you run into problems just type something into the search box and click the "All Apple Music" button on the right side of the pop-up (if you don't see it, make sure iTunes is logged in to your Apple account with an active Apple Music subscription).
 - By default, the Spotify playlist name will be used as the iTunes playlist name; pass `--playlist-name <something else>` to use something else as the playlist name 
 - If you want to add to an existing playlist (`--exists`), you'll need to get iTunes in the correct starting state by searching for a track in the Apple Music search and adding it to your target playlist. You can remove it again right away; this is just to get the *"Add to Last Playlist, {your playlist name}"* context menu choice to appear.
 - You may need to tweak the track/artist name matching code to get it to work for the tracks in your playlist.

@@ -165,7 +165,7 @@ def parse_args():
     parser.add_argument("--playlist-name",
                         help="The name of the iTunes playlist to create or add to. (default: use the name from the spotify playlist)")
     parser.add_argument("--exists",
-                        help="Expect an existing last playlist instead of creating it at the start",
+                        help="Expect an existing last playlist instead of creating a playlist at the start",
                         default=True,
                         action="store_false",
                         dest="create"
