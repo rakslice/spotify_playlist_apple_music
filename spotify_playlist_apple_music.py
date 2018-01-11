@@ -440,8 +440,6 @@ def main():
 
                         time.sleep(1)
 
-                        dout(tree_uia(window))
-
                         # Playlist created from a track gets a default name "<artist> - <track>"
                         actual_text = None
                         for _ in xrange(10):
