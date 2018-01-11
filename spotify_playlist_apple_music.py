@@ -76,6 +76,8 @@ def make_soup(contents):
 # (characters not specified here will be used directly)
 CHARACTER_CODES = {" ": "{VK_SPACE}",
                    "+": "+=",
+                   "^": "+6",
+                   "%": "+5",
                    "(": "+9",
                    ")": "+0",
                    }
