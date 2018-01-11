@@ -253,6 +253,10 @@ def main():
                 playlist_name = loaded_playlist_name
             assert playlist_name is not None
 
+            if input_track_num == 0:
+                with open(no_results_filename, "a") as handle:
+                    print >> handle, "Input Playlist '%s' %s" % (loaded_playlist_name, url)
+
             original_track_name = track["name"]
             original_track_artist = track["artist"]
             what_to_search_for = original_track_name + " " + original_track_artist
