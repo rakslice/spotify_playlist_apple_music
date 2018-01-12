@@ -3,6 +3,7 @@ import argparse
 import ctypes
 import json
 import os
+import re
 import string
 import urllib2
 import urlparse
@@ -24,7 +25,7 @@ SKIP_ARTISTS = frozenset([])
 
 SKIP_SONGS = frozenset([])
 
-LEAVE_OUT_PHRASES = ["Remastered 2011", "Remastered", "- Acoustic", "Remaster"]
+LEAVE_OUT_PHRASES = [re.compile(x, re.IGNORECASE) for x in [r"Remastered 20\d\d", r"Remastered 19\d\d", "Remastered", "- Acoustic", "Remaster"]]
 
 # This is to be set by the playlist loader to something appropriate for a playlist name
 loaded_playlist_name = None
@@ -284,8 +285,8 @@ def main():
                 continue
 
             for lop in LEAVE_OUT_PHRASES:
-                if lop in what_to_search_for:
-                    what_to_search_for = what_to_search_for.replace(lop, "")
+                if lop.search(what_to_search_for):
+                    what_to_search_for = lop.sub("", what_to_search_for)
                 what_to_search_for = " ".join(what_to_search_for.split())
 
             what_to_search_for = what_to_search_for.lower()
