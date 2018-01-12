@@ -232,10 +232,7 @@ def main():
     window.set_focus()
     if True:
 
-        parsed_url = urlparse.urlparse(url)
-
-        track_source = TRACK_SOURCES[parsed_url.hostname]
-        tracks = track_source(url)
+        tracks = get_track_iterator_for_url(url)
 
         started = False
         if skip_to is None:
@@ -496,6 +493,13 @@ def main():
                 with open(no_results_filename, "a") as handle:
                     print >> handle, (u"%s - %s - %s did not match any of the songs in the results list" % ((input_track_num + 1), original_track_name, original_track_artist)).encode('utf-8')
                     continue
+
+
+def get_track_iterator_for_url(url):
+    parsed_url = urlparse.urlparse(url)
+    track_source = TRACK_SOURCES[parsed_url.hostname]
+    tracks = track_source(url)
+    return tracks
 
 
 def uia_sibling(l, rel=+1):
