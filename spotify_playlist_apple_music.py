@@ -164,8 +164,11 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("url",
                         help="An open.spotify.com URL for the public playlist to import")
-    parser.add_argument("--playlist-name",
-                        help="The name of the iTunes playlist to create or add to. (default: use the name from the spotify playlist)")
+    mutex_group = parser.add_mutually_exclusive_group()
+    mutex_group.add_argument("--playlist-name",
+                             help="The name of the iTunes playlist to create or add to. (default: use the name from the spotify playlist)")
+    mutex_group.add_argument("--playlist-prefix",
+                             help="A prefix for the front of the automatically created playlist name")
     parser.add_argument("--exists",
                         help="Expect an existing last playlist instead of creating a playlist at the start",
                         default=True,
@@ -255,6 +258,9 @@ def main():
             if playlist_name is None:
                 playlist_name = loaded_playlist_name
             assert playlist_name is not None
+            if options.playlist_prefix is not None:
+                assert options.playlist_name is None
+                playlist_name = options.playlist_prefix + playlist_name
 
             if input_track_num == 0:
                 with open(no_results_filename, "a") as handle:
