@@ -492,7 +492,10 @@ def main():
 
                 break
             else:
-                assert False, "We didn't find the song in the results list %r" % songs_seen
+                print "We didn't find the song in the results list %r" % songs_seen
+                with open(no_results_filename, "a") as handle:
+                    print >> handle, (u"%s - %s - %s did not match any of the songs in the results list" % ((input_track_num + 1), original_track_name, original_track_artist)).encode('utf-8')
+                    continue
 
 
 def uia_sibling(l, rel=+1):
