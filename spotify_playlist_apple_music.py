@@ -338,13 +338,13 @@ def main():
                     print >> handle, (u"%s - %s - %s - %s" % ((input_track_num + 1), original_track_name, original_track_artist, actual_label_text)).encode('utf-8')
                 continue
 
-            songs_label, songs_label_idx = uia_find_first_descendent_depth_first(window, "SONGS", "Custom")
-
-            dout((songs_label, songs_label_idx))
-
-            # dout(uia_fetch(window, songs_label_idx))
-
             for _ in xrange(4):
+                songs_label, songs_label_idx = uia_find_first_descendent_depth_first(window, "Songs", "Custom")
+                if songs_label is None:
+                    time.sleep(0.5)
+                    continue
+
+                dout((songs_label, songs_label_idx))
                 songs_group_idx = uia_sibling(songs_label_idx, 1)
                 try:
                     songs_group = uia_fetch(window, songs_group_idx)
