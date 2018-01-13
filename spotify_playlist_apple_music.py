@@ -299,7 +299,12 @@ def inner_main(options):
             if what_to_search_for.lower() in SKIP_SONGS:
                 continue
 
-            for lop in LEAVE_OUT_PHRASES:
+            dynamic_replacements = [original_track_artist + " &"]
+            for dr in dynamic_replacements:
+                if dr in what_to_search_for:
+                    what_to_search_for = what_to_search_for.replace(dr, "")
+
+            for lop in LEAVE_OUT_PHRASES_COMPILED:
                 if lop.search(what_to_search_for):
                     what_to_search_for = lop.sub("", what_to_search_for)
                 what_to_search_for = " ".join(what_to_search_for.split())
