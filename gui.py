@@ -24,6 +24,7 @@ from win_util import get_short_path_name
 
 
 def set_enabled(obj, value):
+    """ Helper to enable/disable GUI control """
     if value:
         obj.Enable()
     else:
@@ -31,6 +32,7 @@ def set_enabled(obj, value):
 
 
 class MyFrameImpl(MyFrame):
+    """ Attach code to the MyFrame GUI skeleton from the wxGlade code generator """
     def __init__(self, *args, **kwargs):
         super(MyFrameImpl, self).__init__(*args, **kwargs)
         self.radio_btn_prefix.SetValue(True)
@@ -39,6 +41,8 @@ class MyFrameImpl(MyFrame):
         self.update_state()
 
     def update_state(self):
+        """ Update the state of controls based on other controls' entered values and
+        whether a playlist is already loaded """
         prefix_mode = self.radio_btn_prefix.GetValue()
         set_enabled(self.text_playlist_name, not prefix_mode)
         set_enabled(self.text_prefix, prefix_mode)
@@ -54,6 +58,7 @@ class MyFrameImpl(MyFrame):
             self.button_load.SetDefault()
 
     def load_reset(self):
+        """ Something has been changed that invalidates the previously loaded playlist """
         self.have_loaded_playlist_ok = False
         self.loaded_playlist_name = None
 
@@ -74,9 +79,12 @@ class MyFrameImpl(MyFrame):
         self.update_state()
 
     def button_load_click(self, event):
-        self.have_loaded_playlist_ok = False
+        self.load_reset()
         self.update_state()
         url = self.text_url.GetValue()
+
+        # Try to load the playlist, and show a message about the result.
+
         result = False
         try:
             it = spotify_playlist_apple_music.get_track_iterator_for_url(url)
@@ -99,6 +107,7 @@ class MyFrameImpl(MyFrame):
             result = True
         self.label_load_result.SetLabel(message)
         self.have_loaded_playlist_ok = result
+        # If the load was successful, this will enable the Import button.
         self.update_state()
 
     def button_import_click(self, event):
@@ -125,7 +134,7 @@ class MyFrameImpl(MyFrame):
         python_app = os.path.join(script_path, "spotify_playlist_apple_music.py")
 
         # I'm just using this short path name business because I can't find any quoting to convince
-        # cmd /k to accept the
+        # cmd /C to accept the full path
         python_exe = os.path.join(os.path.dirname(sys.executable), "python.exe")
         python_cmd = [get_short_path_name(python_exe), "-u", get_short_path_name(python_app)] + params
 
