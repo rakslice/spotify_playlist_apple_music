@@ -118,7 +118,7 @@ class MyFrameImpl(MyFrame):
         # cmd /k to accept the
         python_cmd = [get_short_path_name(sys.executable), "-u", get_short_path_name(python_app)] + params
 
-        command = "cmd /K %s" % " ".join(python_cmd)
+        command = "cmd /C start %s" % " ".join(python_cmd)
         print command
         subprocess.Popen(command, universal_newlines=True)
 
