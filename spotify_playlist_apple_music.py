@@ -281,7 +281,15 @@ def inner_main(options):
 
             original_track_name = track["name"]
             original_track_artist = track["artist"]
-            what_to_search_for = original_track_name + " " + original_track_artist
+
+            search_track_name = original_track_name
+
+            dynamic_replacements = [original_track_artist + " &"]
+            for dr in dynamic_replacements:
+                if dr in search_track_name:
+                    search_track_name = search_track_name.replace(dr, "")
+
+            what_to_search_for = search_track_name + " " + original_track_artist
             if not started:
                 if what_to_search_for.lower().startswith(skip_to.lower()):
                     started = True
@@ -298,11 +306,6 @@ def inner_main(options):
                 continue
             if what_to_search_for.lower() in SKIP_SONGS:
                 continue
-
-            dynamic_replacements = [original_track_artist + " &"]
-            for dr in dynamic_replacements:
-                if dr in what_to_search_for:
-                    what_to_search_for = what_to_search_for.replace(dr, "")
 
             for lop in LEAVE_OUT_PHRASES_COMPILED:
                 if lop.search(what_to_search_for):
