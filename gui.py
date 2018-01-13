@@ -102,7 +102,12 @@ class MyFrameImpl(MyFrame):
         self.update_state()
 
     def button_import_click(self, event):
-        params = ["--pause"]
+        if self.checkbox_separate_window.GetValue():
+            params = ["--pause"]
+            command_form = "cmd /C start %s"
+        else:
+            params = []
+            command_form = "cmd /C %s"
 
         prefix_mode = self.radio_btn_prefix.GetValue()
         if prefix_mode:
@@ -124,7 +129,7 @@ class MyFrameImpl(MyFrame):
         python_exe = os.path.join(os.path.dirname(sys.executable), "python.exe")
         python_cmd = [get_short_path_name(python_exe), "-u", get_short_path_name(python_app)] + params
 
-        command = "cmd /C start %s" % " ".join(python_cmd)
+        command = command_form % " ".join(python_cmd)
         print command
         subprocess.Popen(command, universal_newlines=True)
 
