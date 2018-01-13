@@ -27,7 +27,8 @@ SKIP_ARTISTS = frozenset([])
 
 SKIP_SONGS = frozenset([])
 
-LEAVE_OUT_PHRASES = [re.compile(x, re.IGNORECASE) for x in [r"Remastered 20\d\d", r"Remastered 19\d\d", "Remastered", "- Acoustic", "Remaster"]]
+LEAVE_OUT_PHRASES = [r"Remastered 20\d\d", r"Remastered 19\d\d", r"20\d\d Remastered", r"19\d\d Remastered", "Remastered", "- Acoustic", "Remaster"]
+LEAVE_OUT_PHRASES_COMPILED = [re.compile(x, re.IGNORECASE) for x in LEAVE_OUT_PHRASES]
 
 # This is to be set by the playlist loader to something appropriate for a playlist name
 loaded_playlist_name = None
