@@ -116,7 +116,8 @@ class MyFrameImpl(MyFrame):
 
         # I'm just using this short path name business because I can't find any quoting to convince
         # cmd /k to accept the
-        python_cmd = [get_short_path_name(sys.executable), "-u", get_short_path_name(python_app)] + params
+        python_exe = os.path.join(os.path.dirname(sys.executable), "python.exe")
+        python_cmd = [get_short_path_name(python_exe), "-u", get_short_path_name(python_app)] + params
 
         command = "cmd /C start %s" % " ".join(python_cmd)
         print command
