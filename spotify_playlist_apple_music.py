@@ -266,9 +266,6 @@ def inner_main(options):
         verify_context_menu = True
 
         for input_track_num, track in enumerate(tracks):
-            if scroll_lock_on():
-                assert False, "stopping - scroll lock on"
-
             playlist_name = options.playlist_name
             if playlist_name is None:
                 playlist_name = loaded_playlist_name
@@ -292,6 +289,9 @@ def inner_main(options):
                     continue
             else:
                 write_contents(skip_to_filename_hash, what_to_search_for.encode("utf-8"))
+
+            if scroll_lock_on():
+                assert False, "stopping - scroll lock on"
 
             if original_track_artist in SKIP_ARTISTS:
                 continue
