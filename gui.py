@@ -97,7 +97,7 @@ class MyFrameImpl(MyFrame):
         self.update_state()
 
     def button_import_click(self, event):
-        params = []
+        params = ["--pause"]
 
         prefix_mode = self.radio_btn_prefix.GetValue()
         if prefix_mode:

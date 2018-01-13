@@ -5,6 +5,7 @@ import json
 import os
 import re
 import string
+import traceback
 import urllib2
 import urlparse
 # noinspection PyPackageRequirements
@@ -15,6 +16,7 @@ import pywinauto
 import pywinauto.base_wrapper
 import pywinauto.controls
 import requests
+import sys
 
 from spamutil import Timer, dout, dlogfile
 from unidecode import unidecode
@@ -176,6 +178,10 @@ def parse_args():
                         action="store_false",
                         dest="create"
                         )
+    parser.add_argument("--pause",
+                        help="Pause on exception",
+                        default=False,
+                        action="store_true")
     return parser.parse_args()
 
 
@@ -196,7 +202,18 @@ def unilower(s):
 
 def main():
     options = parse_args()
+    # noinspection PyBroadException
+    try:
+        return inner_main(options)
+    except Exception:
+        if options.pause:
+            traceback.print_exc()
+            print "pause"
+            sys.stdin.readline()
+        raise
 
+
+def inner_main(options):
     dlogfile(os.path.join(script_path, "output.log"))
 
     dout("iTunes automation. Turn on SCROLL LOCK to stop before the next track.")
