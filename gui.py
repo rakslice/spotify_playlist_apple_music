@@ -48,6 +48,11 @@ class MyFrameImpl(MyFrame):
 
         set_enabled(self.button_import, self.have_loaded_playlist_ok)
 
+        if self.have_loaded_playlist_ok:
+            self.button_import.SetDefault()
+        else:
+            self.button_load.SetDefault()
+
     def load_reset(self):
         self.have_loaded_playlist_ok = False
         self.loaded_playlist_name = None
