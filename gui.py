@@ -39,6 +39,7 @@ class MyFrameImpl(MyFrame):
         self.have_loaded_playlist_ok = False
         self.loaded_playlist_name = None
         self.update_state()
+        self.current_process = None
 
     def update_state(self):
         """ Update the state of controls based on other controls' entered values and
@@ -94,21 +95,28 @@ class MyFrameImpl(MyFrame):
         except urllib2.HTTPError:
             message = "Can't load the playlist at that address. Double-check the URL."
         else:
-            prefix_mode = self.radio_btn_prefix.GetValue()
-            imported_playlist_name = spotify_playlist_apple_music.loaded_playlist_name
-            if prefix_mode:
-                prefix = self.text_prefix.GetValue()
-                if prefix is None:
-                    prefix = ""
-                playlist_name = prefix + imported_playlist_name
-            else:
-                playlist_name = self.text_playlist_name.GetValue()
+            playlist_name = self.get_playlist_name()
             message = u"Loaded playlist. Click Import to create '%s'" % playlist_name
             result = True
-        self.label_load_result.SetLabel(message)
+        self.show_message(message)
         self.have_loaded_playlist_ok = result
         # If the load was successful, this will enable the Import button.
         self.update_state()
+
+    def get_playlist_name(self):
+        imported_playlist_name = spotify_playlist_apple_music.loaded_playlist_name
+        prefix_mode = self.radio_btn_prefix.GetValue()
+        if prefix_mode:
+            prefix = self.text_prefix.GetValue()
+            if prefix is None:
+                prefix = ""
+            playlist_name = prefix + imported_playlist_name
+        else:
+            playlist_name = self.text_playlist_name.GetValue()
+        return playlist_name
+
+    def show_message(self, message):
+        self.label_load_result.SetLabel(message)
 
     def button_import_click(self, event):
         if self.checkbox_separate_window.GetValue():
@@ -128,6 +136,9 @@ class MyFrameImpl(MyFrame):
             params += ["--playlist-name", '"%s"' % playlist_name_text]
 
         url = self.text_url.GetValue()
+
+        self.show_message("Importing '%s' to '%s'" % (url, self.get_playlist_name()))
+
         params.append(url)
 
         script_path = os.path.dirname(os.path.abspath(__file__))
@@ -140,7 +151,21 @@ class MyFrameImpl(MyFrame):
 
         command = command_form % " ".join(python_cmd)
         print command
-        subprocess.Popen(command, universal_newlines=True)
+        self.current_process = subprocess.Popen(command, universal_newlines=True)
+        self.button_import.Disable()
+        self.monitor()
+
+    def monitor(self):
+        return_code = self.current_process.poll()
+        if return_code is None:
+            wx.CallLater(2000, self.monitor)
+        else:
+            if return_code == 0:
+                self.show_message("Import complete")
+            else:
+                self.show_message("Import process exited with return code %d" % return_code)
+            self.current_process = None
+            self.button_import.Enable()
 
 
 def main():
