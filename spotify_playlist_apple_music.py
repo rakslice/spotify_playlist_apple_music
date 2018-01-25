@@ -473,14 +473,14 @@ def inner_main(options):
 
                         # Playlist created from a track gets a default name "<artist> - <track>"
                         actual_text = None
-                        for _ in xrange(10):
+                        for _ in xrange(30):
                             should_be_group_box = get_child_at(window, 0)
                             actual_text = should_be_group_box.texts()[0]
                             if actual_text.startswith(found_song_artist + " - ") and actual_text.endswith(" header"):
                                 break
                             time.sleep(0.5)
                         else:
-                            assert False, (actual_text, found_song_artist)
+                            assert False, "The screen for the new playlist did not appear in the expected time %r" % ((actual_text, found_song_artist),)
 
                         # We start with the playlist name in rename mode with the existing text selected
                         window.type_keys(text_to_sendkeys_str(playlist_name) + "{VK_RETURN}")
