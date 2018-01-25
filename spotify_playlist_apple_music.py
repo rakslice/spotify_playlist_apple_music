@@ -297,7 +297,8 @@ def inner_main(options):
                     dout((input_track_num, what_to_search_for))
                     continue
             else:
-                write_contents(skip_to_filename_hash, what_to_search_for.encode("utf-8"))
+                if input_track_num > 0:
+                    write_contents(skip_to_filename_hash, what_to_search_for.encode("utf-8"))
 
             if scroll_lock_on():
                 assert False, "stopping - scroll lock on"
