@@ -441,7 +441,7 @@ def inner_main(options):
                 dout("Song has %d buttons" % len(buttons))
                 dots_button = buttons[-1]
                 assert isinstance(dots_button, pywinauto.controls.uia_controls.ButtonWrapper)
-                dout(tree_uia(dots_button))
+                # dout(tree_uia(dots_button))
                 dots_button.click_input(button="right")
 
                 if verify_context_menu:
