@@ -28,8 +28,9 @@ If you're okay with just running `spotify_playlist_apple_music.py` on the comman
 
 # Command-line options
 
-	usage: spotify_playlist_apple_music.py [-h] [--playlist-name PLAYLIST_NAME]
-	                                       [--exists]
+	usage: spotify_playlist_apple_music.py [-h]
+	                                       [--playlist-name PLAYLIST_NAME | --playlist-prefix PLAYLIST_PREFIX]
+	                                       [--exists] [--pause]
 	                                       url
 	
 	positional arguments:
@@ -41,8 +42,12 @@ If you're okay with just running `spotify_playlist_apple_music.py` on the comman
 	  --playlist-name PLAYLIST_NAME
 	                        The name of the iTunes playlist to create or add to.
 	                        (default: use the name from the spotify playlist)
+	  --playlist-prefix PLAYLIST_PREFIX
+	                        A prefix for the front of the automatically created
+	                        playlist name
 	  --exists              Expect an existing last playlist instead of creating a
 	                        playlist at the start
+	  --pause               Pause on exception
 
 # To use
 
