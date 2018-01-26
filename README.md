@@ -14,6 +14,18 @@ Then, to install the other required libraries, run
 
 on the included requirements.txt file.
 
+I've found that `win32api` installed this way fails to load unless you copy the `*.dll` files that it puts in `Lib/site-packages/pywin32_system32` in your python install or virtualenv to your `Lib/site-packages/win32` directory.
+
+There is a GUI wrapper included (`gui.py`); you'll need to install wxPython 3.0 for Python 2.7 to use it.  For a wxPython build that's easy to use with `pip` and `virtualenv`, use [the unofficial Windows wheel builds from UCI](https://www.lfd.uci.edu/~gohlke/pythonlibs/#wxpython). You'll need to install both the common one
+
+    pip install wxPython_common‑3.0.2.0‑py2‑none‑any.whl
+
+and the `win32` or `win_amd64` one depending on whether your Windows version is 32-bit or 64-bit, respectively:
+
+    pip install wxPython‑3.0.2.0‑cp27‑none‑*.whl
+
+If you're okay with just running `spotify_playlist_apple_music.py` on the command line without using the GUI, you don't need to install wxPython.
+
 # Command-line options
 
 	usage: spotify_playlist_apple_music.py [-h] [--playlist-name PLAYLIST_NAME]
