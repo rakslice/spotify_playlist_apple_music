@@ -387,6 +387,7 @@ def inner_main(options):
                 assert False, "error finding songs list"
 
             if uia_fetch(songs_group, [0]).texts()[0] == "See All":
+                dout("skipping See All button")
                 songs_group_idx = uia_sibling(songs_label_idx, 2)
                 songs_group = uia_fetch(window, songs_group_idx)
 
@@ -437,9 +438,11 @@ def inner_main(options):
                 dout("Matched on %r - %r" % (artist_match_on, original_candidate))
 
                 buttons = songs_group_children[i + 4].children()
+                dout("Song has %d buttons" % len(buttons))
                 dots_button = buttons[-1]
                 assert isinstance(dots_button, pywinauto.controls.uia_controls.ButtonWrapper)
-                dots_button.click()
+                dout(tree_uia(dots_button))
+                dots_button.click_input(button="right")
 
                 if verify_context_menu:
                     time_to_context = Timer("context show")
