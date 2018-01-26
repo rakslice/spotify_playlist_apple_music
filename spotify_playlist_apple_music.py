@@ -381,6 +381,7 @@ def inner_main(options):
                     songs_group = uia_fetch(window, songs_group_idx)
                 except IndexError:
                     time.sleep(0.5)
+                    continue
                 break
             else:
                 assert False, "error finding songs list"
