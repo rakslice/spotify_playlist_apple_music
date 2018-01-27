@@ -394,6 +394,7 @@ def inner_main(options):
                     # but if the rest of the expected sections are present let's assume there were no song results
 
                     parent = expected_results_label_index[:-1]
+                    dout("parent is %r" % parent)
 
                     result_sections = range(expected_results_label_index[-1] + 1, uia_num_children(uia_fetch(window, parent)), 2)
 
