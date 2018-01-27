@@ -147,6 +147,11 @@ def get_child_at(obj, i, **kwargs):
     return child
 
 
+def uia_num_children(obj, **kwargs):
+    assert isinstance(obj, pywinauto.base_wrapper.BaseWrapper)
+    return len(obj.element_info.children(**kwargs))
+
+
 # Word replacements to do in the search (to match what Apple Music does in their catalog)
 WORD_REPLACEMENTS = {
     "fuck": "f**k",
@@ -335,6 +340,8 @@ def inner_main(options):
             dout("Want label text: %r" % expected_results_label_text)
             dout("Error label text: %r" % failure_result_label_text)
 
+            expected_results_label_index = None
+
             found = False
 
             for i in xrange(10):
@@ -343,7 +350,8 @@ def inner_main(options):
                 _, search_custom_idx = uia_find_first_descendent_depth_first(window, "Search", "Custom")
                 if search_custom_idx is not None:
                     try:
-                        expected_results_label = uia_fetch(window, uia_sibling(search_custom_idx))
+                        expected_results_label_index = uia_sibling(search_custom_idx)
+                        expected_results_label = uia_fetch(window, expected_results_label_index)
                     except IndexError:
                         # go around
                         continue
@@ -362,29 +370,65 @@ def inner_main(options):
                 dout(tree_uia(window))
                 assert False, "Results never loaded"
 
+            assert expected_results_label_index is not None
+
             time.sleep(0.25)
+
+            if found:
+                for _ in xrange(4):
+                    songs_label, songs_label_idx = uia_find_first_descendent_depth_first(window, "Songs", "Custom")
+                    if songs_label is None:
+                        time.sleep(0.5)
+                        continue
+
+                    dout((songs_label, songs_label_idx))
+                    songs_group_idx = uia_sibling(songs_label_idx, 1)
+                    try:
+                        songs_group = uia_fetch(window, songs_group_idx)
+                    except IndexError:
+                        time.sleep(0.5)
+                        continue
+                    break
+                else:
+                    # we failed to find a songs section. maybe the structure of the page has changed,
+                    # but if the rest of the expected sections are present let's assume there were no song results
+
+                    parent = expected_results_label_index[:-1]
+
+                    result_sections = range(expected_results_label_index[-1] + 1, uia_num_children(uia_fetch(window, parent)), 2)
+
+                    possible_section_titles = ["Top Results", "Music Videos", "Playlists"]
+
+                    valid_sections = True
+
+                    if len(result_sections) == 0:
+                        valid_sections = False
+                    else:
+                        for i in result_sections:
+                            section_title_obj = uia_fetch(window, parent + [i])
+                            section_title_text = section_title_obj.texts()[0]
+                            section_title_class = section_title_obj.friendly_class_name()
+                            if section_title_text not in possible_section_titles or section_title_class != "Custom":
+                                valid_sections = False
+                                break
+                            sep_obj = uia_fetch(window, parent + [i+1])
+                            sep_obj_text = sep_obj.texts()[0]
+                            sep_obj_class = sep_obj.friendly_class_name()
+                            if sep_obj_text != "" or sep_obj_class != "GroupBox":
+                                valid_sections = False
+                                break
+
+                    if valid_sections:
+                        # treat as no results case
+                        found = False
+                    else:
+                        dout(tree_uia(window))
+                        assert False, "error finding songs list"
 
             if not found:
                 with open(no_results_filename, "a") as handle:
                     print >> handle, (u"%s - %s - %s - %s" % ((input_track_num + 1), original_track_name, original_track_artist, actual_label_text)).encode('utf-8')
                 continue
-
-            for _ in xrange(4):
-                songs_label, songs_label_idx = uia_find_first_descendent_depth_first(window, "Songs", "Custom")
-                if songs_label is None:
-                    time.sleep(0.5)
-                    continue
-
-                dout((songs_label, songs_label_idx))
-                songs_group_idx = uia_sibling(songs_label_idx, 1)
-                try:
-                    songs_group = uia_fetch(window, songs_group_idx)
-                except IndexError:
-                    time.sleep(0.5)
-                    continue
-                break
-            else:
-                assert False, "error finding songs list"
 
             if uia_fetch(songs_group, [0]).texts()[0] == "See All":
                 dout("skipping See All button")
