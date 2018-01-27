@@ -393,12 +393,15 @@ def inner_main(options):
                     # we failed to find a songs section. maybe the structure of the page has changed,
                     # but if the rest of the expected sections are present let's assume there were no song results
 
-                    parent = expected_results_label_index[:-1]
-                    dout("parent is %r" % parent)
+                    _, search_custom_idx = uia_find_first_descendent_depth_first(window, "Search", "Custom")
+                    assert search_custom_idx is not None
+
+                    parent = search_custom_idx[:-1]
 
                     try:
                         result_sections = range(expected_results_label_index[-1] + 1, uia_num_children(uia_fetch(window, parent)), 2)
                     except IndexError:
+                        dout("expected_results_label_index is %r" % expected_results_label_index)
                         dout(tree_uia(window))
                         raise
 
