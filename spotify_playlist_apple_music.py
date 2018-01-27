@@ -396,7 +396,11 @@ def inner_main(options):
                     parent = expected_results_label_index[:-1]
                     dout("parent is %r" % parent)
 
-                    result_sections = range(expected_results_label_index[-1] + 1, uia_num_children(uia_fetch(window, parent)), 2)
+                    try:
+                        result_sections = range(expected_results_label_index[-1] + 1, uia_num_children(uia_fetch(window, parent)), 2)
+                    except IndexError:
+                        dout(tree_uia(window))
+                        raise
 
                     possible_section_titles = ["Top Results", "Music Videos", "Playlists"]
 
