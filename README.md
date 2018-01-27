@@ -63,7 +63,8 @@ If you're okay with just running `spotify_playlist_apple_music.py` on the comman
 
 # Notes
 
-- iTunes' search box needs to be in Apple Music mode. If you run into problems just type something into the search box and click the "All Apple Music" button on the right side of the pop-up (if you don't see it, make sure iTunes is logged in to your Apple account with an active Apple Music subscription).
+- iTunes' search box needs to be in Apple Music mode. If you run into problems with the automation's searches not showing the results page, just type something into the search box and click the "All Apple Music" button on the right side of the pop-up (if you don't see it, make sure iTunes is logged in to your Apple account with an active Apple Music subscription).
+- You'll need to have the iTunes window sized big enough so that enough of the results page appears on the screen, or else the clicks to bring up the song context menu won't register in the right place
 - By default, the Spotify playlist name will be used as the iTunes playlist name; pass `--playlist-name <something else>` to use something else as the playlist name 
 - If you want to add to an existing playlist (`--exists`), you'll need to get iTunes in the correct starting state by searching for a track in the Apple Music search and adding it to your target playlist. You can remove it again right away; this is just to get the *"Add to Last Playlist, {your playlist name}"* context menu choice to appear.
 - You may need to tweak the track/artist name matching code to get it to work for the tracks in your playlist.
